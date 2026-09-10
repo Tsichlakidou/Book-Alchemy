@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  </head>
+  <body>
+  <form method="GET">
+    <label for="sort_by">Sort by:</label>
+    <select name="sort_by" required>
+    <option value = "title">Title</option>
+    <option value = "publication_year">Publicaiton year</option>
+    <option value = "author">Author</option>
+    </select><br><br>
+    <button type="submit">Sort</button>
+</form>
+<form method="GET">
+    <input type="text" name="search">
+    <button type="submit">Search</button>
+</form>
+{% if books %}
+{% for book in books %}
+    <div>
+        <h3>{{ book.title }} by {{ book.author.name }}</h3>
+      <img src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg">
+      <p>https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg</p>
+    </div>
+{% endfor %}
+  {% elif search and not books %}
+    <p>No books found.</p>
+{% endif %}
+
+  </body>
+</html>

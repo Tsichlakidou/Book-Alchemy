@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Author's Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {{ author.name }}<br><br>
+    {% for book in books %}
+    <div>
+        <h3>{{ book.title }} </h3>
+    </div>
+    {% endfor %}
+</body>
+</html>

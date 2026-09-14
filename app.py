@@ -1,12 +1,10 @@
-from asyncio.windows_events import NULL
-
-from flask import Flask, request,render_template
 import os
-from flask import Flask
+from flask import Flask, redirect, url_for,request,render_template, flash
 from data_models import db, Author, Book
 from datetime import datetime
 from sqlalchemy import or_
 app = Flask(__name__)
+app.secret_key = 'your-secret-key'
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -29,7 +27,7 @@ def home():
         books = Book.query.order_by(Book.title).all()
     elif sort_by == 'publication_year':
         books = Book.query.order_by(Book.publication_year).all()
-    elif sort_by == 'author':
+    elif sort_by == "author":
         books = Book.query.join(Author).order_by(Author.name).all()
     else:
         books = Book.query.all()
@@ -41,7 +39,8 @@ def add_author():
     success = False
     if request.method == 'POST':
         name = request.form.get('name')
-        birth_date = datetime.strptime(request.form.get('birth_date'),'%Y-%m-%d').date()
+        birth_date_str = request.form.get('birth_date', '')
+        birth_date = datetime.strptime(birth_date_str, '%Y-%m-%d').date()
         date_of_death_str = request.form.get('date_of_death')
         if date_of_death_str:
             date_of_death = datetime.strptime(date_of_death_str,'%Y-%m-%d').date()
@@ -59,14 +58,46 @@ def add_book():
     if request.method == 'POST':
         title = request.form.get('title')
         isbn = request.form.get('isbn')
-        author_id = int(request.form.get('author_id'))
-        publication_year = int(request.form.get('publication_year'))
-        book = Book(title = title, isbn = isbn, author_id = author_id, publication_year = publication_year)
-        db.session.add(book)
-        db.session.commit()
-        success = True
+        author_id_str = request.form.get('author_id')
+        publication_year_str = request.form.get('publication_year')
+        if author_id_str and publication_year_str:
+            author_id = int(author_id_str)
+            publication_year = int(publication_year_str)
+            book = Book(title = title, isbn = isbn, author_id = author_id, publication_year = publication_year)
+            db.session.add(book)
+            db.session.commit()
+            success = True
     authors = Author.query.all()
     return render_template('add_book.html', authors = authors, success = success)
+
+@app.route('/book/<int:book_id>/delete', methods=['POST'])
+def delete_book(book_id):
+    book = Book.query.filter(Book.id == book_id).first()
+    if book:
+        author = book.author
+        db.session.delete(book)
+        db.session.commit()
+
+        have_other_books = Book.query.filter(Book.author_id == author.id).all()
+        if not have_other_books:
+            db.session.delete(author)
+            db.session.commit()
+        flash("Book deleted successfully!")
+    return redirect(url_for('home'))
+
+
+@app.route('/book/<int:book_id>')
+def details(book_id):
+    book = Book.query.filter(Book.id == book_id).first()
+    return render_template('details.html', book = book)
+
+
+@app.route('/author/<int:author_id>')
+def author_details(author_id):
+    books = Book.query.filter(Book.author_id == author_id).all()
+    author = Author.query.filter(Author.id == author_id).first()
+    return render_template('author_details.html', books = books, author = author)
+
 
 db.init_app(app)
 with app.app_context():

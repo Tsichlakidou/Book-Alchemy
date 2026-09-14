@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Details</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+{{ book.title }}
+{{ book.author.name }}
+{{ book.publication_year }}
+{{ book.isbn }}
+</body>
+</html>

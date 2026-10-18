@@ -1,26 +1,53 @@
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
-    <title> Add Author </title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  </head>
-  <body>
+    <title>Add Author | My Library</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
 
-  <form action="/add_author" method="POST">
-  <label for="name">Author Name:</label>
-  <input type="text" id="name" name="name" required><br><br>
+<header>
+    <h1>📚 My Library</h1>
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('add_book') }}">Add Book</a>
+        <a href="{{ url_for('add_author') }}">Add Author</a>
+    </nav>
+</header>
 
-  <label for="birth_date">Birthdate:</label>
-  <input type="date" id="birth_date" name="birth_date" required><br><br>
-  <label for="date_of_death">Date of Death:</label>
-  <input type="date" id="date_of_death" name="date_of_death"><br><br>
-  <input type="submit" value="Add Author">
-  </form>
-  {% if success %}
-    <p>Author added successfully!</p>
-  {% endif %}
-  </body>
+<main class="form-card">
+    <h2>Add a New Author</h2>
+    <p class="form-description">Enter the author information below.</p>
+
+    {% for message in get_flashed_messages() %}
+        <p class="form-message">{{ message }}</p>
+    {% endfor %}
+
+    {% if success %}
+        <p class="success-message">Author added successfully!</p>
+    {% endif %}
+
+    <form action="{{ url_for('add_author') }}" method="POST">
+
+        <label for="name">Author Name</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="birth_date">Birth Date</label>
+        <input type="date" id="birth_date" name="birth_date" required>
+
+        <label for="date_of_death">Date of Death (optional)</label>
+        <input type="date" id="date_of_death" name="date_of_death">
+
+        <button type="submit">Add Author</button>
+    </form>
+
+    <a class="back-link" href="{{ url_for('home') }}">
+        ← Back to Library
+    </a>
+</main>
+
+</body>
 </html>

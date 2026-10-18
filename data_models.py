@@ -1,12 +1,14 @@
+"""Define the Author and Book database models for Book Alchemy."""
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
 # id, name, birth_date, and date_of_death
 class Author(db.Model):
+    """Represent an author in the library database."""
     __tablename__ = "authors"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), unique=True, nullable=False)
     birth_date = db.Column(db.Date, nullable=False)
     date_of_death = db.Column(db.Date)
 
@@ -14,6 +16,7 @@ class Author(db.Model):
         return f"Author({self.name}, {self.birth_date}, {self.date_of_death})"
 
 class Book(db.Model):
+    """Represent a book in the library database."""
     __tablename__ = "books"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(100), nullable=False)
@@ -24,4 +27,3 @@ class Book(db.Model):
 
     def __repr__(self):
         return f"Book({self.title}, {self.author_id}, {self.publication_year})"
-
